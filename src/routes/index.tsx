@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import VoiceBot from "../components/VoiceBot";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import {
