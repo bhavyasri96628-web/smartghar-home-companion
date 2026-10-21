@@ -9,9 +9,9 @@ import { fallbackAnswer } from "@/lib/fallback";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "SmartGhar AI Home Helper — Everyday home problems, solved" },
+      { title: "SmartGhar – Your AI Home Helper" },
       { name: "description", content: "Ask SmartGhar for electricity saving tips, cleaning routines, recipes from your ingredients and home organization help." },
-      { property: "og:title", content: "SmartGhar AI Home Helper" },
+      { property: "og:title", content: "SmartGhar – Your AI Home Helper" },
       { property: "og:description", content: "A friendly AI helper for electricity, cleaning, cooking and organizing your home." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -51,6 +51,13 @@ function Index() {
   const [offline, setOffline] = useState(false);
   const [ingredients, setIngredients] = useState("");
   const [menu, setMenu] = useState(false);
+  const [chores, setChores] = useState([
+    { t: "Wash dishes", who: "Everyone", done: false },
+    { t: "Water the plants", who: "Kids", done: false },
+    { t: "Take out trash", who: "Papa", done: true },
+  ]);
+  const [newChore, setNewChore] = useState("");
+  const [who, setWho] = useState("");
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -110,7 +117,7 @@ function Index() {
     }
   }
 
-  const navLinks = [["Assistant", "#assistant"], ["Features", "#features"], ["Cooking", "#cooking"]];
+  const navLinks = [["Assistant", "#assistant"], ["Features", "#features"], ["Cooking", "#cooking"], ["Chores", "#chores"]];
 
   return (
     <div className="min-h-screen bg-background font-sans">
@@ -135,8 +142,8 @@ function Index() {
       <section className="bg-hero text-primary-foreground">
         <div className="mx-auto max-w-6xl px-4 py-16 md:py-24">
           <p className="mb-3 inline-block rounded-full bg-primary-foreground/15 px-3 py-1 text-sm">🏡 AI Home Helper for families</p>
-          <h1 className="max-w-2xl font-display text-4xl font-bold leading-tight md:text-6xl">Everyday home problems, solved simply.</h1>
-          <p className="mt-4 max-w-xl text-lg opacity-90">Save electricity, clean faster, cook with what you have and keep every room organized.</p>
+          <h1 className="max-w-2xl font-display text-4xl font-bold leading-tight md:text-6xl">SmartGhar – Your AI Home Helper</h1>
+          <p className="mt-4 max-w-xl text-lg opacity-90">Everyday home problems, solved simply. Save electricity, clean faster, cook with what you have and keep every room organized.</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a href="#assistant" className="rounded-full bg-primary-foreground px-6 py-3 font-semibold text-primary shadow-soft">Ask SmartGhar</a>
             <a href="#features" className="rounded-full border border-primary-foreground/50 px-6 py-3 font-semibold">Explore features</a>
@@ -192,6 +199,36 @@ function Index() {
             </button>
           </form>
         </div>
+      </section>
+
+      <section id="chores" className="mx-auto max-w-3xl scroll-mt-20 px-4 pt-16">
+        <h2 className="font-display text-3xl font-bold">Family chore list</h2>
+        <p className="text-muted-foreground">Add chores, assign them and tick them off.</p>
+        <form
+          className="mt-4 flex flex-col gap-2 sm:flex-row"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!newChore.trim()) return;
+            setChores((c) => [...c, { t: newChore.trim(), who: who.trim() || "Anyone", done: false }]);
+            setNewChore(""); setWho("");
+          }}
+        >
+          <input value={newChore} onChange={(e) => setNewChore(e.target.value)} placeholder="New chore" className="flex-1 rounded-xl border border-input bg-card px-4 py-3 outline-none focus:ring-2 focus:ring-ring" />
+          <input value={who} onChange={(e) => setWho(e.target.value)} placeholder="Who?" className="rounded-xl border border-input bg-card px-4 py-3 outline-none focus:ring-2 focus:ring-ring sm:w-36" />
+          <button disabled={!newChore.trim()} className="rounded-xl bg-primary px-5 py-3 font-semibold text-primary-foreground disabled:opacity-50">Add</button>
+        </form>
+        <ul className="mt-4 divide-y divide-border rounded-2xl border border-border bg-card shadow-soft">
+          {chores.length === 0 && <li className="p-4 text-sm text-muted-foreground">No chores yet — add one above.</li>}
+          {chores.map((c, i) => (
+            <li key={i} className="flex items-center gap-3 p-4">
+              <input type="checkbox" checked={c.done} onChange={() => setChores((l) => l.map((x, j) => (j === i ? { ...x, done: !x.done } : x)))} className="h-5 w-5 accent-primary" aria-label={`Mark ${c.t} done`} />
+              <span className={`flex-1 ${c.done ? "text-muted-foreground line-through" : ""}`}>{c.t}</span>
+              <span className="rounded-full bg-secondary px-2 py-0.5 text-xs text-secondary-foreground">{c.who}</span>
+              <button onClick={() => setChores((l) => l.filter((_, j) => j !== i))} aria-label={`Remove ${c.t}`} className="text-muted-foreground hover:text-destructive"><X className="h-4 w-4" /></button>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-2 text-sm text-muted-foreground">{chores.filter((c) => c.done).length} of {chores.length} done</p>
       </section>
 
       <section id="assistant" className="mx-auto max-w-3xl scroll-mt-20 px-4 py-16">
