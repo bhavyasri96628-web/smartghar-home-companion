@@ -22,8 +22,8 @@ export const Route = createFileRoute("/api/chat")({
         }
         if (!messages.length) return Response.json({ error: "Please type a question." }, { status: 400 });
 
-        const key = process.env.LOVABLE_API_KEY;
-        const last = messages[messages.length - 1].content;
+        const key = process.env["LOVABLE_API_KEY"];
+        const last = messages[messages.length - 1]!.content;
         if (!key) return Response.json({ mode: "offline", text: fallbackAnswer(last) });
 
         const { createOpenAI } = await import("@ai-sdk/openai");

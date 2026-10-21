@@ -96,7 +96,7 @@ function Index() {
     } catch (e) {
       // Live AI failed — fall back to built-in tips so the user still gets help.
       setMessages((m) => {
-        const base = m[m.length - 1]?.role === "assistant" && !m[m.length - 1].content ? m.slice(0, -1) : m;
+        const base = m[m.length - 1]?.role === "assistant" && !m[m.length - 1]!.content ? m.slice(0, -1) : m;
         return [...base, { role: "assistant", content: fallbackAnswer(q), offline: true }];
       });
       setError(
